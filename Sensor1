@@ -1,0 +1,30 @@
+#include <SPI.h>
+#include <LoRa.h>
+
+int counter = 0;
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("LoRa Sender");
+
+  if (!LoRa.begin(866E6)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
+}
+
+void loop() {
+int sensorValue = analogRead(A0);
+  char pack[50];
+  float d = analogRead(A0);
+  String p = "b" + String(d);
+  p.toCharArray(pack, 50);
+  Serial.println(pack);
+  LoRa.beginPacket();
+  LoRa.println(p);
+  LoRa.endPacket();
+
+  counter++;
+
+  delay(1000);
+}
