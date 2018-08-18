@@ -1,0 +1,38 @@
+#include <WEMOS_SHT3X.h>
+#include <SPI.h>
+#include <LoRa.h>
+#include <HCSR04.h>
+
+SHT3X sht30(0x45);
+HCSR04 hc(5,6);//initialisation class HCSR04 (trig pin , echo pin)
+int counter = 0;
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("LoRa Sender");
+
+  if (!LoRa.begin(866E6)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
+}
+
+void loop() {
+
+  (sht30.get()==0);
+ Serial.println(String(counter));
+  char pack[50];
+  float t = sht30.cTemp;
+  float h = sht30.humidity;
+  float d = hc.dist();
+  String p = "a" + String(t) + "," + String(h) + "," + String(d);
+  p.toCharArray(pack, 50);
+  Serial.println(pack);
+  LoRa.beginPacket();
+  LoRa.println(p);
+  LoRa.endPacket();
+
+  counter++;
+
+  delay(1000);
+}
